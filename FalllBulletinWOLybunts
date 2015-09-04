@@ -1,0 +1,50 @@
+SELECT Donor.ID, Donor.Pidm, Donor.Sort_Name,CFAE_CAT,
+      (SELECT 'Y' from sys.dual WHERE EXISTS (SELECT 'x' FROM AW_PPG WHERE aw_ppg.pidm = donor.pidm and desg = '1125' )) "Past Donor to Bulletin",
+      (SELECT 'Y' from sys.dual WHERE EXISTS (SELECT 'x' FROM DONOR DONOR1 WHERE DONOR1.pidm = donor.pidm and donor1.PD_PYR = 0 and donor1.pd_5Yr > 0  and donor1.PD_cyr = 0)) "Sybunt",
+      (SELECT 'Y' from sys.dual WHERE EXISTS (SELECT 'x' FROM DONOR DONOR2 WHERE DONOR2.PIDM = DONOR.PIDM and DONOR2.Class = 2015)) "Class of 2015",
+      (SELECT 'Y' from sys.dual WHERE EXISTS (SELECT 'x' FROM AW_PPG WHERE aw_ppg.pidm = donor.pidm and desg = '1125' and Campaign NOT IN ('AFR16', 'AFR15','AFR14', 'AFR13', 'AFR12', 'AFR11', 'AFR10'))) "Lapsed Donor to Bulletin",
+      (SELECT 'Y' from sys.dual WHERE EXISTS (SELECT 'x' FROM AW_PPG WHERE aw_ppg.pidm = donor.pidm and desg = '1125' and Campaign = 'AFR15')) "FY15 Donor to Bulletin"
+FROM  donor
+WHERE  NOT EXISTS (SELECT 1
+        FROM ALUMNI.APREXCL
+        WHERE APREXCL_PIDM = PIDM
+          AND (ALUMNI.APREXCL.APREXCL_EXCL_CODE IN ('INL', 'INR', 'RPD', 'DEC',  'NOC','MAN', 'NML','DNS')))
+  AND Dead_Ind IS NULL
+  AND SORT_NAME NOT LIKE '%ANONY%'
+  AND CFAE_CAT NOT IN ('GMEM', 'MEDI', 'RELA', 'SPSE', 'DONT')
+  AND Entity_ind = 'P'
+  AND PD_CYR = 0
+  and not exists
+            (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from apracyr, stvactc
+               where apracyr_pidm = donor.pidm
+               and   apracyr_actc_code = stvactc_code
+               and   stvactc_actp_code = 'TRUST'
+               and   stvactc_accg_code = 'UNIV'))
+      and not exists
+            (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from ATVDCNP ATVDCNP,
+                    APRDCLB APRDCLB
+               where APRDCLB.APRDCLB_PIDM = DONOR.PIDM
+                 and APRDCLB.APRDCLB_DCNP_CODE = ATVDCNP.ATVDCNP_CODE
+                 AND ATVDCNP.ATVDCNP_DCST_CODE = 'LP')) 
+        and not  exists
+            (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from  amrprin
+               where amrprin_pidm = donor.pidm
+                 AND amrprin_prst_code IN ('U', 'P','L','Q','T','V')
+                 and amrprin_givh_code IN ('T5','T1')))
+        and (class = 2015
+             OR EXISTS (SELECT 'x' FROM AW_PPG WHERE aw_ppg.pidm = donor.pidm and desg = '1125' )
+             OR (PD_PYR = 0 and pd_5Yr > 0  and PD_cyr = 0)
+             OR EXISTS (SELECT 'x' FROM AW_PPG WHERE aw_ppg.pidm = donor.pidm and desg = '1125' and Campaign NOT IN ('AFR16', 'AFR15','AFR14', 'AFR13', 'AFR12', 'AFR11', 'AFR10'))
+             OR EXISTS (SELECT 'x' FROM AW_PPG WHERE aw_ppg.pidm = donor.pidm and desg = '1125' and Campaign = 'AFR15'))
