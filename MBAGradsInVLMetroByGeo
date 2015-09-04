@@ -1,0 +1,36 @@
+SELECT ID, don.SORT_NAME, don.FIRST_NAME, don.LAST_NAME,
+       GEO, Class, CFAE_CAT,
+  (SELECT Addr_Line1 || ' ' || ADDR_Line2 || ' ' || Addr_Line3 ||' ' || City || ', ' || State||' ' || Zip || ' ' ||
+  DECODE(Nation,
+             'US', 'United States',
+             'United States')
+   FROM AW_ADDR Addr
+   WHERE addr.ADDR_PIDM = don.PIDM
+     AND ADDR_PREF = ADDR.ADDR_TYPE) AS "Address",
+  (SELECT GOREMAL_EMAIL_ADDRESS
+   FROM GENERAL.GOREMAL
+   WHERE GOREMAL_PIDM = don.PIDM
+     AND GENERAL.GOREMAL.GOREMAL_STATUS_IND = 'A'
+     AND GENERAL.GOREMAL.GOREMAL_PREFERRED_IND = 'Y') AS "Preferred Email",
+  (Select Employer_Name
+     FROM ALUMNI.AW_EMPLOY_INFO
+     WHERE EMPLOY_PIDM = don.PIDM),
+  (Select Position
+     FROM ALUMNI.AW_EMPLOY_INFO
+     WHERE EMPLOY_PIDM = don.PIDM), 
+  APRADEG_DATE as "Degree Date",
+  trunc(MONTHS_BETWEEN(SYSDATE,don.DOB)/12) AS "AGE",
+  deg.APRADEG_ACYR_CODE As "Graduate Year"
+FROM ALUMNI.APRADEG deg, ALUMNI.DONOR don
+WHERE deg.APRADEG_PIDM = don.PIDM
+  AND deg.APRADEG_DEGC_CODE = 'MBA' AND deg.APRADEG_SBGI_CODE = '002365'
+  AND don.DEAD_IND IS NULL 
+  AND don.CFAE_CAT IN ('ALMB', 'ALMG')
+  AND don.GEO IN (select gtvsdax_external_code from gtvsdax
+     where gtvsdax_internal_code = 'SUPEREGION'
+       and gtvsdax_internal_code_group = 'GEOREGION'
+       and gtvsdax_desc = 'LV Metro')
+  AND NOT EXISTS (SELECT 1
+        FROM ALUMNI.APREXCL
+        WHERE APREXCL_PIDM = don.PIDM
+          AND (ALUMNI.APREXCL.APREXCL_EXCL_CODE IN ('INL', 'INR', 'RPD', 'DEC',  'NOC')))
