@@ -1,0 +1,15 @@
+select DONOR.SORT_NAME,
+       DONOR.CFAE_CAT,
+       DONOR.CLASS,
+       DONOR.COLLEGE,
+       DONOR.PRSTAFF,
+       DONOR.ID
+  from DONOR DONOR
+       WHERE ( PIDM IN (select gerattd.GERATTD_PIDM
+                       from gerattd
+                       where gerattd_evnt_crn = 'C1439'
+                       and   gerattd_func_code = 'REUNION'
+                       and   gerattd_pidm = donor.pidm) )
+       and ( DONOR.CFAE_CAT = 'ALMB'
+         or DONOR.CFAE_CAT = 'ALMX' )
+order by DONOR.SORT_NAME
