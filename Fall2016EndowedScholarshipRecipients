@@ -1,0 +1,32 @@
+select AXVAWRD.AXVAWRD_DESG,
+       AXVAWRD.AXVAWRD_ID "ID",
+       AXVAWRD.AXVAWRD_NAME,
+       AXVAWRD.AXVAWRD_PAID_AMT,
+       DONOR.CFAE_CAT,
+       DONOR.CLASS,
+       DONOR.COLLEGE,
+       AW_HOME_ADDR.HOME_STREET1,
+       AW_HOME_ADDR.HOME_STREET2,
+       AW_HOME_ADDR.HOME_CITY,
+       AW_HOME_ADDR.HOME_STATE,
+       AW_HOME_ADDR.HOME_ZIP,
+       AW_HOME_ADDR.HOME_AREA_CODE,
+       AW_HOME_ADDR.HOME_PHONE_NUMBER,
+       (select max(goremal_email_address)
+          from goremal
+          where goremal_pidm = donor.pidm
+          and   goremal_preferred_ind = 'Y') "Preferred_Email"
+  from DONOR DONOR,
+       AXVAWRD,
+       AW_HOME_ADDR
+where ( DONOR.PIDM = AW_HOME_ADDR.HOME_PIDM (+)
+         and AXVAWRD.AXVAWRD_PIDM = DONOR.PIDM )
+    and (AXVAWRD.AXVAWRD_TERM_CODE = 201540 OR AXVAWRD.AXVAWRD_TERM_CODE = 201610)
+   and (( AXVAWRD.AXVAWRD_PAID_AMT > 0
+           or AXVAWRD.AXVAWRD_FA_FUND_CODE = 'PRIOR' ) )
+   and EXISTS(SELECT 'x'
+         FROM ADRATTR
+        WHERE ADRATTR.ADRATTR_DESG = AXVAWRD_DESG
+        and ADRATTR.ADRATTR_DATR_CODE in ('STWC'))
+   and AXVAWRD_DESG <> '2200'
+  ORDER BY AXVAWRD.AXVAWRD_DESG
