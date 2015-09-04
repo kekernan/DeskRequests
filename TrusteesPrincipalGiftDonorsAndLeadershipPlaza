@@ -1,0 +1,149 @@
+WITH
+  research_rating AS
+  (SELECT
+    amrprrt_pidm pidm
+  , MIN(amrprrt_rtgt_code) rtgt_code
+  FROM
+    amrprrt
+  WHERE
+    amrprrt_rtgt_code IN('D', 'S')
+  GROUP BY
+    amrprrt_pidm
+  )
+, spouse AS
+  (SELECT
+    aprxref_pidm pidm
+  , MIN(aprxref_xref_pidm) spouse_pidm
+  FROM
+    aprxref
+  WHERE
+    aprxref_xref_code IN('DOM', 'SPS')
+  AND aprxref_household_ind = 'Y'
+  GROUP BY
+    aprxref_pidm
+  )
+SELECT
+  donor.id
+, apbcons_cm_name
+, (SELECT Addr_Line1
+  FROM AW_ADDR Addr
+   WHERE addr.ADDR_PIDM = DONOR.PIDM
+     AND DONOR.ADDR_PREF = ADDR.ADDR_TYPE) AS "Address Line 1",
+  (SELECT ADDR_Line2
+  FROM AW_ADDR Addr
+   WHERE addr.ADDR_PIDM = DONOR.PIDM
+     AND DONOR.ADDR_PREF = ADDR.ADDR_TYPE) AS "Address Line2",   
+  (SELECT Addr_Line3
+  FROM AW_ADDR Addr
+   WHERE addr.ADDR_PIDM = DONOR.PIDM
+     AND DONOR.ADDR_PREF = ADDR.ADDR_TYPE) AS "Address Line 3",
+  (SELECT City
+  FROM AW_ADDR Addr
+   WHERE addr.ADDR_PIDM = DONOR.PIDM
+     AND DONOR.ADDR_PREF = ADDR.ADDR_TYPE) AS "City",
+     (SELECT State
+  FROM AW_ADDR Addr
+   WHERE addr.ADDR_PIDM = DONOR.PIDM
+     AND DONOR.ADDR_PREF = ADDR.ADDR_TYPE) AS "State",
+      (SELECT Zip
+  FROM AW_ADDR Addr
+   WHERE addr.ADDR_PIDM = DONOR.PIDM
+     AND DONOR.ADDR_PREF = ADDR.ADDR_TYPE) AS "Zip",
+     (SELECT GOREMAL_EMAIL_ADDRESS
+   FROM GENERAL.GOREMAL
+   WHERE GOREMAL_PIDM = DONOR.PIDM
+     AND GENERAL.GOREMAL.GOREMAL_STATUS_IND = 'A'
+     AND GENERAL.GOREMAL.GOREMAL_PREFERRED_IND = 'Y') AS "Preferred Email",
+     ( CASE
+         WHEN DONOR.TELE_PREF = 'H'
+         THEN (SELECT SPRTELE_PHONE_AREA || ' ' || SPRTELE_PHONE_NUMBER
+                FROM SATURN.SPRTELE
+                WHERE SPRTELE_STATUS_IND IS NULL
+                 AND SPRTELE_PIDM = DONOR.PIDM
+                 AND SPRTELE_TELE_CODE = 'HO'
+                 AND SPRTELE_ATYP_CODE = 'HO'
+                 AND SPRTELE_PRIMARY_IND = 'Y')
+       WHEN DONOR.TELE_PREF = 'B'
+       THEN (SELECT SPRTELE_PHONE_AREA || ' ' || SPRTELE_PHONE_NUMBER
+              FROM SATURN.SPRTELE
+              WHERE SPRTELE_STATUS_IND IS NULL
+               AND SPRTELE_PIDM = DONOR.PIDM
+               AND SPRTELE_TELE_CODE = 'BU'
+               AND SPRTELE_ATYP_CODE = 'BU'
+               AND SPRTELE_PRIMARY_IND = 'Y')
+      else null 
+      END
+      ) AS "Preferred Phone",
+      (CASE
+       WHEN EXISTS (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from apracyr, stvactc
+               where apracyr_pidm = donor.pidm
+               and   apracyr_actc_code = stvactc_code
+               and   stvactc_actp_code = 'TRUST'
+               and   stvactc_accg_code = 'UNIV'))
+       THEN 1
+       WHEN Exists (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from  amrprin
+               where amrprin_pidm = donor.pidm
+                 AND amrprin_prst_code IN ('U', 'P','L','Q','T','V')
+                 and amrprin_givh_code IN ('T5','T1')))
+       THEN 2
+       WHEN EXISTS (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from ATVDCNP ATVDCNP,
+                    APRDCLB APRDCLB
+               where APRDCLB.APRDCLB_PIDM = DONOR.PIDM
+                 and APRDCLB.APRDCLB_DCNP_CODE = ATVDCNP.ATVDCNP_CODE
+                 AND ATVDCNP.ATVDCNP_DCST_CODE = 'LP'))
+       THEN 3
+       ELSE 4
+       END) AS DeDuped
+FROM
+  donor
+, research_rating
+, spouse
+, apbcons
+WHERE
+  dead_ind IS NULL
+  AND donor.pidm = apbcons_pidm
+AND donor.pidm = research_rating.pidm(+)
+AND donor.pidm = spouse.pidm(+)
+AND research_rating.rtgt_code <> 'S'
+and (( exists
+            (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from apracyr, stvactc
+               where apracyr_pidm = donor.pidm
+               and   apracyr_actc_code = stvactc_code
+               and   stvactc_actp_code = 'TRUST'
+               and   stvactc_accg_code = 'UNIV')))
+         OR ( exists
+            (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from ATVDCNP ATVDCNP,
+                    APRDCLB APRDCLB
+               where APRDCLB.APRDCLB_PIDM = DONOR.PIDM
+                 and APRDCLB.APRDCLB_DCNP_CODE = ATVDCNP.ATVDCNP_CODE
+                 AND ATVDCNP.ATVDCNP_DCST_CODE = 'LP')))
+         OR ( exists
+            (select 'x'
+               from sys.dual
+               where exists
+                 (select 'x'
+               from  amrprin
+               where amrprin_pidm = donor.pidm
+                 AND amrprin_prst_code IN ('U', 'P','L','Q','T','V')
+                 and amrprin_givh_code IN ('T5','T1')))))
+ORDER BY DeDuped, DONOR.SORT_NAME   
