@@ -1,0 +1,143 @@
+select DONOR.SORT_NAME,
+       DONOR.CFAE_CAT,
+       DONOR.CLASS,
+       (select guriden_desc
+       from guriden
+       where guriden_iden_code = prstaff) "Staff",
+       DONOR.GEO,
+       AW_HISTORY.DONOR_STATUS,
+      
+       AW_ADDR.ADDR_LINE1,
+       AW_ADDR.ADDR_LINE2,
+       AW_ADDR.ADDR_LINE3,
+       AW_ADDR.CITY,
+       AW_ADDR.STATE,
+       AW_ADDR.ZIP,
+       AW_ADDR.NATION,
+       AW_ADDR.PHONE_NO,
+       AW_ADDR.ADDR_TYPE,
+       (select goremal_email_address
+           from goremal
+           where goremal_pidm = donor.pidm
+           and   goremal_preferred_ind = 'Y') "Preferred_Email",
+       (select max(sprtele_phone_area||'-'||substr(sprtele_phone_number,1,3)||'-'||substr(sprtele_phone_number,4,4))
+          from sprtele
+          where sprtele_pidm = donor.pidm
+          and   sprtele_status_ind is null
+          and   sprtele_tele_code = 'CL') "Mobile_Phone",
+      
+       to_char((nvl(((select sum(amt_paid+amt_memo)
+          from aw_ppg, adbdesg
+          where aw_ppg.pidm = donor.pidm
+          and  desg = adbdesg_desg
+          and  adbdesg_coll_code = 'AS')),0)),'$999,999,990') "Lifetime_Giving_to_CAS",
+       to_char((nvl(((select sum(amt_Pledged)
+          from aw_ppg, adbdesg
+          where aw_ppg.pidm = donor.pidm
+          and  desg = adbdesg_desg
+          and  adbdesg_coll_code = 'AS'
+          and aw_ppg.PLEDGE_STATUS = 'A')),0)),'$999,999,990') "Open_Pledge_to_CAS",
+       to_char((nvl(((select sum(amt_paid+amt_memo)
+          from aw_ppg, adbdesg
+          where aw_ppg.pidm = donor.pidm
+          and  desg = adbdesg_desg
+          and  adbdesg_coll_code = 'AS'
+          and fiscal_year = 2016)),0)),'$999,999,990') "CYR_Giving_to_CAS",
+       AW_HISTORY.LAST_GIFT_DATE "Last_Gift_Date_to_Lehigh",
+       'N' "Planned_Ask",
+       AW_EMPLOY_INFO.EMPLOYER_NAME,
+       AW_EMPLOY_INFO.POSITION,
+       DONOR.ID,
+       DONOR.PIDM
+  from DONOR,
+       AW_HISTORY,
+       APBCONS,
+       AW_ADDR,
+       AW_EMPLOY_INFO
+where ( DONOR.PIDM = AW_HISTORY.PIDM
+         and AW_HISTORY.PIDM = APBCONS.APBCONS_PIDM (+)
+         and DONOR.PIDM = AW_ADDR.ADDR_PIDM (+)
+         and DONOR.ADDR_PREF = AW_ADDR.ADDR_TYPE (+)
+         and DONOR.PIDM = AW_EMPLOY_INFO.EMPLOY_PIDM (+) )
+   and  (((select sum(amt_paid+amt_memo)
+              from aw_ppg, adbdesg
+              where aw_ppg.pidm = donor.pidm
+              and   desg = adbdesg_desg             
+              and   adbdesg_coll_code = 'AS') > 100000)
+          OR (exists(SELECT 'x'
+          from aw_ppg, adbdesg
+          where aw_ppg.pidm = donor.pidm
+          and  desg = adbdesg_desg
+          and  adbdesg_coll_code = 'AS'
+          and aw_ppg.PLEDGE_STATUS = 'A'
+          and aw_ppg.amt_pledged > 100000))) 
+   and dead_ind is null      
+   --and entity_ind = 'P'
+   and sort_Name Not Like 'Anon%'
+UNION ALL (SELECT DONOR.SORT_NAME,
+       DONOR.CFAE_CAT,
+       DONOR.CLASS,
+       (select guriden_desc
+       from guriden
+       where guriden_iden_code = prstaff) "Staff",
+       DONOR.GEO,
+       AW_HISTORY.DONOR_STATUS,
+      
+       AW_ADDR.ADDR_LINE1,
+       AW_ADDR.ADDR_LINE2,
+       AW_ADDR.ADDR_LINE3,
+       AW_ADDR.CITY,
+       AW_ADDR.STATE,
+       AW_ADDR.ZIP,
+       AW_ADDR.NATION,
+       AW_ADDR.PHONE_NO,
+       AW_ADDR.ADDR_TYPE,
+       (select goremal_email_address
+           from goremal
+           where goremal_pidm = donor.pidm
+           and   goremal_preferred_ind = 'Y') "Preferred_Email",
+       (select max(sprtele_phone_area||'-'||substr(sprtele_phone_number,1,3)||'-'||substr(sprtele_phone_number,4,4))
+          from sprtele
+          where sprtele_pidm = donor.pidm
+          and   sprtele_status_ind is null
+          and   sprtele_tele_code = 'CL') "Mobile_Phone",
+      
+       to_char((nvl(((select sum(amt_paid+amt_memo)
+          from aw_ppg, adbdesg
+          where aw_ppg.pidm = donor.pidm
+          and  desg = adbdesg_desg
+          and  adbdesg_coll_code = 'AS')),0)),'$999,999,990') "Lifetime_Giving_to_CAS",
+       to_char((nvl(((select sum(amt_Pledged)
+          from aw_ppg, adbdesg
+          where aw_ppg.pidm = donor.pidm
+          and  desg = adbdesg_desg
+          and  adbdesg_coll_code = 'AS'
+          and aw_ppg.PLEDGE_STATUS = 'A')),0)),'$999,999,990') "Open_Pledge_to_CAS",
+       to_char((nvl(((select sum(amt_paid+amt_memo)
+          from aw_ppg, adbdesg
+          where aw_ppg.pidm = donor.pidm
+          and  desg = adbdesg_desg
+          and  adbdesg_coll_code = 'AS'
+          and fiscal_year = 2016)),0)),'$999,999,990') "CYR_Giving_to_CAS",
+       AW_HISTORY.LAST_GIFT_DATE "Last_Gift_Date_to_Lehigh",
+       'Y' "Planned_Ask",
+       AW_EMPLOY_INFO.EMPLOYER_NAME,
+       AW_EMPLOY_INFO.POSITION,
+       DONOR.ID,
+       DONOR.PIDM
+FROM adv_projects,DONOR,
+       AW_HISTORY,
+       APBCONS,
+       AW_ADDR,
+       AW_EMPLOY_INFO
+WHERE adv_projects.pidm = donor.pidm
+         and DONOR.PIDM = AW_HISTORY.PIDM
+         and AW_HISTORY.PIDM = APBCONS.APBCONS_PIDM (+)
+         and DONOR.PIDM = AW_ADDR.ADDR_PIDM (+)
+         and DONOR.ADDR_PREF = AW_ADDR.ADDR_TYPE (+)
+         and DONOR.PIDM = AW_EMPLOY_INFO.EMPLOY_PIDM (+)
+and project_target_ask_amount > 100000
+and project_target_ask_date < add_months(sysdate, 10)
+and project_status NOT IN ('C', 'N', 'M', 'W')
+and project_Desc LIKE ('3%'))
+ORDER BY 1
