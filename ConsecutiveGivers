@@ -1,0 +1,140 @@
+SELECT ID, Sort_Name, FULL_NAME, CFAE_CAT, CLASS, COLLEGE,
+(SELECT spouse.FULL_NAME
+  FROM DONOR spouse, APRXREF
+  WHERE spouse.pidm = aprxref_pidm
+    AND spouse.CFAE_CAT = 'ALMB'
+    AND aprxref_xref_pidm = donor.pidm
+    AND aprxref_Household_Ind = 'Y'
+    AND aprxref_CM_PRI_IND = 'S') AS "Lehigh Couple"
+FROM DONOR
+WHERE (PD_CYR + PG_CYR) > 0
+  AND (PD_PYR + PG_PYR) > 0
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2013
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2012
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2011
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2010
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2009
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2008
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2007
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2006
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2005
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2004
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2003
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2002
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2001
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 2000
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1999
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1998
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1997
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1996
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1995
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1994
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1993
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1992
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1991
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1991
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+  AND EXISTS (SELECT AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED AS TotalAmt
+              FROM AW_PPG
+              WHERE AW_PPG.PIDM = Donor.PIDM
+                AND Fiscal_Year = 1991
+                AND AW_PPG.AMT_PAID + AW_PPG.AMT_PLEDGED > 0)
+               
+ 
+  AND CFAE_CAT = 'ALMB'
+ORDER BY CLASS, SORT_NAME
