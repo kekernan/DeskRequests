@@ -1,0 +1,51 @@
+select DONOR.SORT_NAME,
+       DONOR.CFAE_CAT,
+       DONOR.CLASS,
+       (select guriden_desc
+       from guriden
+       where guriden_iden_code = prstaff) "Staff",
+       DONOR.GEO,
+       AW_HISTORY.DONOR_STATUS,
+      
+       AW_ADDR.ADDR_LINE1,
+       AW_ADDR.ADDR_LINE2,
+       AW_ADDR.ADDR_LINE3,
+       AW_ADDR.CITY,
+       AW_ADDR.STATE,
+       AW_ADDR.ZIP,
+       AW_ADDR.NATION,
+       AW_ADDR.PHONE_NO,
+       AW_ADDR.ADDR_TYPE,
+       (select goremal_email_address
+           from goremal
+           where goremal_pidm = donor.pidm
+           and   goremal_preferred_ind = 'Y') "Preferred_Email",
+       (select max(sprtele_phone_area||'-'||substr(sprtele_phone_number,1,3)||'-'||substr(sprtele_phone_number,4,4))
+          from sprtele
+          where sprtele_pidm = donor.pidm
+          and   sprtele_status_ind is null
+          and   sprtele_tele_code = 'CL') "Mobile_Phone",
+
+       AW_EMPLOY_INFO.EMPLOYER_NAME,
+       AW_EMPLOY_INFO.POSITION,
+       DONOR.ID,
+       DONOR.PIDM
+  from DONOR,
+       AW_HISTORY,
+       APBCONS,
+       AW_ADDR,
+       AW_EMPLOY_INFO
+where ( DONOR.PIDM = AW_HISTORY.PIDM
+         and AW_HISTORY.PIDM = APBCONS.APBCONS_PIDM (+)
+         and DONOR.PIDM = AW_ADDR.ADDR_PIDM (+)
+         and DONOR.ADDR_PREF = AW_ADDR.ADDR_TYPE (+)
+         and DONOR.PIDM = AW_EMPLOY_INFO.EMPLOY_PIDM (+) )
+   and  aw_employ_Info.position like '%Tax%'
+   and dead_ind is null      
+   --and entity_ind = 'P'
+   and sort_Name Not Like 'Anon%'
+   AND NOT EXISTS (SELECT 1
+        FROM ALUMNI.APREXCL
+        WHERE APREXCL_PIDM = Donor.PIDM
+          AND (ALUMNI.APREXCL.APREXCL_EXCL_CODE IN ('INL', 'INR', 'RPD', 'DEC',  'NOC')))
+   order by sort_name
