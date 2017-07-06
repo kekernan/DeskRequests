@@ -125,7 +125,7 @@ insert into amrcont
    amrcont_data_origin
    )
  select donor.pidm,
-    :parm_LB_attendee.GURIDEN_IDEN_CODE,
+    :parm_LB_addattendee.GURIDEN_IDEN_CODE,
     :parm_LB_scnt_code.ATVSCNT_CODE,
     refno + 1,
     sysdate,
@@ -153,27 +153,11 @@ insert into amrcont
     :parm_EB_project_2_ask_amount,
     :parm_EB_project_3_ask_amount,
     :parm_EB_project_4_ask_amount,
-    (CASE
-       WHEN '<Enter next step>' = :parm_ME_next_step
-       THEN null
-       ELSE :parm_ME_next_step
-    END),
-    (CASE
-       WHEN '<Enter next step>' = :parm_ME_next_step
-       THEN null
-       ELSE :parm_DT_next_step_date
-    END),
+    NULL,
+    NULL,
     :parm_LB_move_code.ATVMOVE_CODE,
-    (CASE
-       WHEN '<Enter next step>' = :parm_ME_next_step 
-       THEN null
-       ELSE 'P'
-    END),
-     (CASE
-       WHEN '<Enter next step>' = :parm_ME_next_step
-       THEN :parm_LB_next_step_person.GURIDEN_IDEN_CODE
-       ELSE :parm_LB_next_step_person.GURIDEN_IDEN_CODE
-    END),
+    NULL,
+    :parm_LB_addattendee.GURIDEN_IDEN_CODE,
     ' ',
     sysdate,
     'DO 07 CREATE'
@@ -187,9 +171,20 @@ insert into amrcont
        and :parm_MC_search_results.ID is not null
        and :parm_DT_contact_date is not null and :parm_DT_contact_date <= trunc(sysdate)
        and '<Enter the description of the contact>' <> :parm_ME_contact
-       and  nvl((length(:parm_ME_Call_report)),0) <= 4000
-       and (('SOL' <> :parm_LB_move_code.ATVMOVE_CODE) or ('SOL' = :parm_LB_move_code.ATVMOVE_CODE and :parm_EB_project_1_ask_amount is not null ))
-       and ( (:parm_ME_next_step is not null
-                and :parm_DT_next_step_date is not null and trunc(sysdate) <= :parm_DT_next_step_date
-                and :parm_ME_next_step <> '<Enter next step>') or (:parm_ME_next_step = '<Enter next step>') );
+       and  nvl((length(:parm_ME_Call_report)),0) <= 4000;
+--Add crosstable reference
+Insert into U_Call_Report_Crosstable
+(ORIGINATOR_PIDM,
+ORIGINATOR_REFNO,
+ATTENDEE_PIDM,
+ATTENDEE_PIDM,
+CREATE_DATE,
+CREATE_USERID)
+VALUES
+(:parm_MC_search_results.PIDM,
+refno,
+:parm_MC_search_results.PIDM
+refno + 1,
+trunc(sysdate),
+upper(:$User.Name));
 END;
