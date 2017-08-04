@@ -26,6 +26,7 @@ FROM C_CN_CONSTITUENT con
 , PENTAHO.C_CN_EXCLUSIONS_BY_ID excl
 , PENTAHO.C_CN_INDICATORS ind
 , PENTAHO.C_CN_DONOR_STATUS_BY_ID status
+, C_CN_Contact_Pref contact
 , Last3Years
 , Last5Years
 , Last10Years
@@ -35,6 +36,7 @@ AND con.pidm = names.pidm
 AND con.pidm = excl.pidm
 AND con.pidm = ind.pidm
 AND con.pidm = status.pidm
+AND con.pidm = contact.pidm
 AND con.pidm = Last3Years.PIDM
 AND con.pidm = Last5Years.PIDM
 AND con.pidm = Last10Years.pidm
