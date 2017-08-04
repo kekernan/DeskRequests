@@ -50,7 +50,7 @@ insert into amrcont
     :multicolumn13.AMRCONT_ASK_AMT_4,
     NULL
     NULL,
-    :parm_DD_move_updateATVMOVE_CODE,
+    :parm_DD_move_update.ATVMOVE_CODE,
     NULL,
     :parm_LB_UpdateAttendee.GURIDEN_IDEN_CODE,
     ' ',
