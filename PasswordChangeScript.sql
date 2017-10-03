@@ -1,0 +1,1 @@
+alter user kak306 identified by "new_password" replace "J3ss3Mom" ;
