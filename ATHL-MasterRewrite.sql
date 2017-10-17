@@ -112,6 +112,13 @@ WHERE FISCAL_YEAR = 2018
  AND DESIGNATION_CODE IN (SELECT DESIGNATION_CODE FROM PENTAHO.C_GI_DESIGNATIONS
 WHERE PENTAHO.C_GI_DESIGNATIONS.ATHLETICS_IND = 'Y')
 GROUP BY pidm)
+, NonAthlGivingLast5Years AS (SELECT PIDM, SUM(Cash_Credit_Person)/5 Avg_Giving_Non_Athl_Past_5_Yrs
+ FROM PENTAHO.C_GI_CREDIT_DETAIL
+ WHERE fiscal_year between 2013 and 2017
+  AND DESIGNATION_CODE IN (SELECT DESIGNATION_CODE FROM PENTAHO.C_GI_DESIGNATIONS
+WHERE PENTAHO.C_GI_DESIGNATIONS.ATHLETICS_IND <> 'Y')
+GROUP BY pidm
+   )
 SELECT con.banner_id
 , con.name_sort
 , con.name_legal
@@ -142,28 +149,183 @@ SELECT con.banner_id
 , contact.email_pref_address
 , contact.Home_Georegion_code
 , 2013
-, ATH_Giving_B5FY.B5_ATHL_PD_MEMO_MG
-, ATH_AF_Giving_B5FY.B5_ATHL_AF_PD_MEMO_MG
+, NVL(ATH_Giving_B5FY.B5_ATHL_PD_MEMO_MG, 0)
+, NVL(ATH_AF_Giving_B5FY.B5_ATHL_AF_PD_MEMO_MG, 0)
 , 2014
-, ATH_Giving_B4FY.B4_ATHL_PD_MEMO_MG
-, ATH_AF_Giving_B4FY.B4_ATHL_AF_PD_MEMO_MG
+, NVL(ATH_Giving_B4FY.B4_ATHL_PD_MEMO_MG, 0)
+, NVL(ATH_AF_Giving_B4FY.B4_ATHL_AF_PD_MEMO_MG, 0)
 , 2015
-, ATH_Giving_B3FY.B3_ATHL_PD_MEMO_MG
-, ATH_AF_Giving_B3FY.B3_ATHL_AF_PD_MEMO_MG
+, NVL(ATH_Giving_B3FY.B3_ATHL_PD_MEMO_MG, 0)
+, NVL(ATH_AF_Giving_B3FY.B3_ATHL_AF_PD_MEMO_MG, 0)
 , 2016
-, ATH_Giving_B2FY.B2_ATHL_PD_MEMO_MG
-, ATH_AF_Giving_B2FY.B2_ATHL_AF_PD_MEMO_MG
+, NVL(ATH_Giving_B2FY.B2_ATHL_PD_MEMO_MG, 0)
+, NVL(ATH_AF_Giving_B2FY.B2_ATHL_AF_PD_MEMO_MG, 0)
 , 2017
-, ATH_Giving_B1FY.B1_ATHL_PD_MEMO_MG
-, ATH_AF_Giving_B1FY.B1_ATHL_AF_PD_MEMO_MG
+, NVL(ATH_Giving_B1FY.B1_ATHL_PD_MEMO_MG, 0)
+, NVL(ATH_AF_Giving_B1FY.B1_ATHL_AF_PD_MEMO_MG, 0)
 , 2018
-, ATH_Giving_CYR.CFY_ATHL_PD_MEMO_MG
-, ATH_AF_Giving_CYR.CFY_ATHL_AF_PD_MEMO_MG
+, NVL(ATH_Giving_CYR.CFY_ATHL_PD_MEMO_MG, 0) "CFY_ATHL_PD_MEMO_MG"
+, NVL(ATH_AF_Giving_CYR.CFY_ATHL_AF_PD_MEMO_MG, 0) "CFY_ATHL_AF_PD_MEMO_MG"
+, NVL(NonAthlGivingLast5Years.Avg_Giving_Non_Athl_Past_5_Yrs, 0)
+, (CASE
+   WHEN Sports.sport_code IS NOT NULL
+   THEN 'Yes'
+   ELSE null
+   END) "SGRSPRT"
+, (CASE
+   WHEN aact.ACTC_AAN = 'Y'
+   THEN 'AAN'
+   ELSE NULL
+   END) "AAN"
+, (CASE
+   WHEN act.ACTC_CRM = 'Y'
+   THEN 'CRM'
+   ELSE NULL
+   END) "CRM"
+, (CASE
+   WHEN act.ACTC_CRW = 'Y'
+   THEN 'CRW'
+   ELSE NULL
+   END) "CRW"
+, (CASE
+   WHEN act.ACTC_MBA = 'Y'
+   THEN 'MBA'
+   ELSE NULL
+   END) "MBA"
+, (CASE
+   WHEN act.ACTC_MBB = 'Y'
+   THEN 'MBB'
+   ELSE NULL
+   END) "MBB"
+, (CASE
+   WHEN act.ACTC_MCC = 'Y'
+   THEN 'MCC'
+   ELSE NULL
+   END) "MCC"
+, (CASE
+   WHEN act.ACTC_MCR = 'Y'
+   THEN 'MCR'
+   ELSE NULL
+   END) "MCR"
+, (CASE
+   WHEN act.ACTC_MFB = 'Y'
+   THEN 'MFB'
+   ELSE NULL
+   END) "MFB"
+, (CASE
+   WHEN act.ACTC_MGO = 'Y'
+   THEN 'MGO'
+   ELSE NULL
+   END) "MGO"
+, (CASE
+   WHEN act.ACTC_MLA = 'Y'
+   THEN 'MLA'
+   ELSE NULL
+   END) "MLA"
+, (CASE
+   WHEN act.ACTC_MSO = 'Y'
+   THEN 'MSO'
+   ELSE NULL
+   END) "MSO"
+, (CASE
+   WHEN act.ACTC_MSW = 'Y'
+   THEN 'MSW'
+   ELSE NULL
+   END) "MSW"
+, (CASE
+   WHEN act.ACTC_MTE = 'Y'
+   THEN 'MTE'
+   ELSE NULL
+   END) "MTE"
+, (CASE
+   WHEN act.ACTC_MTI = 'Y'
+   THEN 'MTI'
+   ELSE NULL
+   END) "MTI"
+, (CASE
+   WHEN act.ACTC_MTO = 'Y'
+   THEN 'MTO'
+   ELSE NULL
+   END) "MTO"
+, (CASE
+   WHEN act.ACTC_MWR = 'Y'
+   THEN 'MWR'
+   ELSE NULL
+   END)  "MWR"
+, (CASE
+   WHEN act.ACTC_WBB = 'Y'
+   THEN 'WBB'
+   ELSE NULL
+   END) "WBB"
+, (CASE
+   WHEN act.ACTC_WCR = 'Y'
+   THEN 'WCR'
+   ELSE NULL
+   END) "WCR"
+, (CASE
+   WHEN act.ACTC_WCC = 'Y'
+   THEN 'WCC'
+   ELSE NULL
+   END) "WCC"
+, (CASE
+   WHEN act.ACTC_WFH = 'Y'
+   THEN 'WFH'
+   ELSE NULL
+   END) "WFH"
+, (CASE
+   WHEN act.ACTC_WGO = 'Y'
+   THEN 'WGO'
+   ELSE NULL
+   END) "WGO"
+, (CASE
+   WHEN act.ACTC_WLA = 'Y'
+   THEN 'WLA'
+   ELSE NULL
+   END) "WLA"
+, (CASE
+   WHEN act.ACTC_WSO = 'Y'
+   THEN 'WSO'
+   ELSE NULL
+   END) "WSO"
+, (CASE
+   WHEN act.ACTC_WSB = 'Y'
+   THEN 'WSB'
+   ELSE NULL
+   END) "WSB"
+, (CASE
+   WHEN act.ACTC_WSW = 'Y'
+   THEN 'WSW'
+   ELSE NULL
+   END) "WSW"
+, (CASE
+   WHEN act.ACTC_WTE = 'Y'
+   THEN 'WTE'
+   ELSE NULL
+   END) "WTE"
+, (CASE
+   WHEN act.ACTC_WTI = 'Y'
+   THEN 'WTI'
+   ELSE NULL
+   END) "WTI"
+, (CASE
+   WHEN act.ACTC_WTO = 'Y'
+   THEN 'WTO'
+   ELSE NULL
+   END) "WTO"
+, (CASE
+   WHEN act.ACTC_WVB = 'Y'
+   THEN 'WVB'
+   ELSE NULL
+   END) "WVB"
+, names.AP_Society_Name "SOCIETY_NAME"
+, names.Annual_Report_Name "ANNUAL_RPT_NAME"
+, con.primary_staff_desc
 FROM C_CN_Constituent con
 , C_CN_Current_Names names
 , C_CN_Contact_Pref contact
 , C_CN_Exclusions_by_id excl
 , C_CN_Activities_student act
+, C_CN_Activities_alumni aact
 , C_CN_Employment_primary emp
 , sports
 , ATH_Giving_B5FY
@@ -176,13 +338,15 @@ FROM C_CN_Constituent con
 , ATH_AF_Giving_B2FY
 , ATH_Giving_B1FY
 , ATH_AF_Giving_B1FY
-, ATH_Giving_CYR
-, ATH_AF_Giving_CYR
+, ATH_Giving_CYR 
+, ATH_AF_Giving_CYR 
+, NonAthlGivingLast5Years
 WHERE --joins
     con.pidm = names.pidm
 AND con.pidm = contact.pidm
 AND con.pidm = excl.pidm
 AND con.pidm = act.pidm
+AND con.pidm = aact.pidm (+)
 AND con.pidm = emp.pidm (+)
 AND con.pidm = sports.pidm (+)
 AND con.pidm = ATH_Giving_B5FY.pidm (+)
@@ -197,6 +361,7 @@ AND con.pidm = ATH_Giving_B1FY.pidm (+)
 AND con.pidm = ATH_AF_Giving_B1FY.pidm (+)
 AND con.pidm = ATH_Giving_CYR.pidm (+)
 AND con.pidm = ATH_AF_Giving_CYR.pidm (+)
+AND con.pidm = NonAthlGivingLast5Years.pidm (+)
 --exclusions
 AND con.dead_ind = 'N'
 AND excl.trump_ind = 'N'
@@ -231,3 +396,4 @@ AND (sports.pidm IS NOT NULL
    OR act.actc_MTO = 'Y'
    OR act.actc_WVB = 'Y'
    OR act.actc_MWR = 'Y')
+ORDER BY 2
