@@ -119,6 +119,16 @@ GROUP BY pidm)
 WHERE PENTAHO.C_GI_DESIGNATIONS.ATHLETICS_IND <> 'Y')
 GROUP BY pidm
    )
+, NonAthlGivingCYR AS (SELECT PIDM, SUM(Cash_Credit_Person) CYR_NO_ATHL
+ FROM PENTAHO.C_GI_CREDIT_DETAIL
+ WHERE fiscal_year = 2018
+  AND DESIGNATION_CODE IN (SELECT DESIGNATION_CODE FROM PENTAHO.C_GI_DESIGNATIONS
+WHERE PENTAHO.C_GI_DESIGNATIONS.ATHLETICS_IND <> 'Y')
+GROUP BY pidm
+   )
+, Occupation AS (select apbcons_pidm pidm, atvdott_desc Occupational_Title
+          from atvdott@prod, apbcons@prod
+          where atvdott_code = apbcons_dott_code)
 SELECT con.banner_id
 , con.name_sort
 , con.name_legal
@@ -320,6 +330,24 @@ SELECT con.banner_id
 , names.AP_Society_Name "SOCIETY_NAME"
 , names.Annual_Report_Name "ANNUAL_RPT_NAME"
 , con.primary_staff_desc
+, CYR_NO_ATHL
+, (donor.PD_5YR + donor.PD_MEMO_5YR ) "ALL_PAST_5YRS"
+, (donor.annual_pd_pyr + donor.annual_pd_memo_pyr +
+   donor.annual_pd_3yr + donor.annual_pd_memo_3yr +
+   donor.annual_pd_4yr + donor.annual_pd_memo_4yr +
+   donor.annual_pd_5yr + donor.annual_pd_memo_5yr +
+   donor.annual_pd_6yr + donor.annual_pd_memo_6yr) "ALL_PAST_5YRS_AF"
+, (donor.LT_PD + donor.LT_PD_MEMO) "ALL_LT_GIVING"
+, AW_HISTORY.LAST_ATHL_GIFT_AMT "Last_Athl_Gift_Amt"
+, AW_HISTORY.LAST_ATHL_GIFT_DATE "Last_Athl_Gift_Date"
+, AW_HISTORY.LAST_ATHL_GIFT_DESIGNATION "Last_Athl_Gift_Designation"
+, AW_HISTORY.LAST_ATHL_GIFT_NUMBER "Last_Athl_Gift_Number"
+, AW_HISTORY.LAST_ATHL_FY_GIVEN "Last_Athl_FY_Given"
+, DONOR.CONS_YEARS_ATHL "ATHL_CONS_YRS"
+, (donor.lt_athl_pd + donor.lt_athl_pd_memo) "LT_ATHL_GIVING"
+, emp.SICC_DESC "Industry"
+, occupation.Occupational_Title
+, ratings.p_rating_code "Priority"
 FROM C_CN_Constituent con
 , C_CN_Current_Names names
 , C_CN_Contact_Pref contact
@@ -327,6 +355,7 @@ FROM C_CN_Constituent con
 , C_CN_Activities_student act
 , C_CN_Activities_alumni aact
 , C_CN_Employment_primary emp
+, C_RM_RATINGS_ACTIVE_BY_ID ratings
 , sports
 , ATH_Giving_B5FY
 , ATH_AF_Giving_B5FY
@@ -341,6 +370,10 @@ FROM C_CN_Constituent con
 , ATH_Giving_CYR 
 , ATH_AF_Giving_CYR 
 , NonAthlGivingLast5Years
+, NonAthlGivingCYR
+, Donor@prod
+, aw_history@prod
+, occupation
 WHERE --joins
     con.pidm = names.pidm
 AND con.pidm = contact.pidm
@@ -362,9 +395,15 @@ AND con.pidm = ATH_AF_Giving_B1FY.pidm (+)
 AND con.pidm = ATH_Giving_CYR.pidm (+)
 AND con.pidm = ATH_AF_Giving_CYR.pidm (+)
 AND con.pidm = NonAthlGivingLast5Years.pidm (+)
+AND con.pidm = NonAthlGivingCyr.pidm (+)
+AND con.pidm = donor.pidm
+AND con.pidm = aw_history.pidm
+AND con.pidm = ratings.pidm (+)
+AND con.pidm = occupation.pidm (+)
 --exclusions
 AND con.dead_ind = 'N'
-AND excl.trump_ind = 'N'
+AND excl.excl_INR = 'N'
+AND excl.excl_RPD = 'N'
 --inclusion criteria
 AND con.donor_code_primary LIKE 'ALM%'
 AND (sports.pidm IS NOT NULL
