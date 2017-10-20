@@ -147,16 +147,56 @@ SELECT con.banner_id
 , con.name_last
 , con.pref_college_code
 , con.primary_staff_code
-, contact.home_street1
-, contact.home_street2
-, contact.home_street3
-, contact.home_city
-, contact.home_state_code
-, contact.home_zip9
-, contact.home_nation_desc
-, contact.TELE_home
-, contact.TELE_business
-, contact.email_pref_address
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.home_street1
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.home_street2
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.home_street3
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.home_city
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.home_state_code
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.home_zip9
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.home_nation_desc
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.TELE_home
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.TELE_business
+   ELSE NULL
+   END)
+, (CASE
+   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   THEN contact.email_pref_address
+   ELSE NULL
+   END)
 , contact.Home_Georegion_code
 , 2013
 , NVL(ATH_Giving_B5FY.B5_ATHL_PD_MEMO_MG, 0)
