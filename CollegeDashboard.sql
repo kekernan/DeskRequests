@@ -70,6 +70,33 @@ WITH Willingness AS
   and   amrcont_item_refno = AW_HISTORY.LAST_CONTACT_ITEM_REFNO
   and   AMRCONT_SCNT_CODE = 'REV'
   GROUP BY amrcont_pidm)
+, ResearchRating AS
+  (SELECT PIDM, SCREENING_CODE Rater_Type, Activity_date Research_Rating_Date
+    FROM PENTAHO.C_RM_RATINGS
+   WHERE Rate_type_code in ('D', 'S')
+     AND Primary_IND = 'Y')
+, Projects AS
+  (select ADV_PROJECTS.PIDM,
+       ADV_PROJECTS.Project Active_Project,
+       ATVPROJ.ATVPROJ_DESC Project_Name,
+       ATVPRST.ATVPRST_DESC,
+       ADV_PROJECTS.PROJECT_STATUS_CHANGE_DATE Date_Opened,
+       ADV_PROJECTS.PROJECT_TARGET_ASK_AMOUNT Planned_Amount,
+       data_sheet.v_amt Expected_Close_Amount
+  from ATVPROJ@prod,
+       ATVPRST@prod,
+       ADV_PROJECTS@prod,
+       data_sheet@prod
+ where ADV_PROJECTS.PROJECT_STATUS = ATVPRST.ATVPRST_CODE
+   and ADV_PROJECTS.PROJECT = ATVPROJ.ATVPROJ_CODE
+   AND data_sheet.pidm = adv_projects.pidm
+   AND data_sheet.athlete_team = ATVPROJ.ATVPROJ_CODE
+   AND data_sheet.code_type = 'PIPRO'
+   AND ATVPRST.atvprst_code in ('L','V','P'))
+, GivingToDesg AS
+  (SELECT pidm, designation_code, sum(cash_credit_person) DesgGiving
+  FROM C_GI_credit_detail
+  GROUP BY pidm, designation_code)
 SELECT 
 con.banner_id ID,
   con.name_sort sort_name,
@@ -139,6 +166,12 @@ con.banner_id ID,
   Last_Contact.AMRCONT_SCNT_CODE Last_Contact_Type,
   Last_Contact.AMRCONT_MOVE_CODE Last_Contact_Move,
   LastVisitDate.Last_Requested_Visit_Date,
+  ResearchRating.Research_Rating_Date,
+  ResearchRating.Rater_Type,
+  Projects.Active_Project,
+  Projects.Project_Name,
+  Projects.Planned_Amount,
+  Projects.Expected_Close_Amount,
   con.donor_code_string cfae_string,
   contact.pref_georegion_code p_geocode,
   contact.pref_georegion_desc p_geodesc,
@@ -176,6 +209,8 @@ FROM
 , NumContacts
 , Last_Contact
 , LastVisitDate
+, ResearchRating
+, Projects
 WHERE --joins
     con.pidm = donorstatus.pidm
 AND con.pidm = employ.pidm
@@ -197,6 +232,8 @@ AND con.pidm = Avg5Giving.pidm (+)
 AND con.pidm = NumContacts.amrcont_pidm (+)
 AND con.pidm = Last_Contact.amrcont_pidm (+)
 AND con.pidm = LastVisitDate.amrcont_pidm (+)
+AND con.pidm = Projects.pidm
+AND con.pidm = ResearchRating.pidm (+)
 --exclusions
 AND con.name_sort NOT LIKE '%Anon%'
 AND con.dead_ind = 'N'
