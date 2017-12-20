@@ -131,92 +131,112 @@ GROUP BY pidm
           where atvdott_code = apbcons_dott_code)
 SELECT con.banner_id
 , con.name_sort
-, con.name_legal
-, con.class_year_pref
-, con.donor_code_primary
+, con.name_legal "FULL_NAME"
 , names.formal_salu
 , names.informal_salu
 , names.formal_address_name
-, con.name_maiden
-, emp.empl_position
-, emp.empr_name
+, con.name_maiden "Maiden"
+, con.class_year_pref "Class"
+, con.donor_code_primary "CFAE"
+, emp.empl_position "POSITION"
+, emp.empr_name "EMPLOYER"
+, occupation.Occupational_Title
+, emp.SICC_DESC "Industry"
 , con.research_rate_code "PRRT"
 , con.qualified_rate_code "QRating"
 , con.Gender_code
 , con.Name_first
 , con.name_last
-, con.pref_college_code
-, con.primary_staff_code
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.home_street1
    ELSE NULL
-   END)
+   END) "H_ADDR1"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.home_street2
    ELSE NULL
-   END)
+   END) "H_ADDR2"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.home_street3
    ELSE NULL
-   END)
+   END) "H_ADDR3"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.home_city
    ELSE NULL
-   END)
+   END) "H_ADDRCITY"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.home_state_code
    ELSE NULL
-   END)
+   END) "H_ADDRSTATE"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.home_zip9
    ELSE NULL
-   END)
+   END) "H_ADDRZIP"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.home_nation_desc
    ELSE NULL
-   END)
+   END) "H_ADDRNATION"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.TELE_home
    ELSE NULL
-   END)
+   END) "H_PH"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.TELE_business
    ELSE NULL
-   END)
+   END) "B_PH"
 , (CASE
-   WHEN excl.excl_RPD = 'N' OR excl.excl_INR = 'N' OR excl.excl_NOC = 'N' OR excl.excl_INL = 'N' OR excl.excl_NML = 'N' OR excl.excl_NAD = 'N' OR excl.excl_DNS = 'N' OR excl.excl_NAU = 'N'
+   WHEN excl.excl_RPD = 'N' AND excl.excl_INR = 'N' AND excl.excl_NOC = 'N' AND excl.excl_INL = 'N' AND excl.excl_NML = 'N' AND excl.excl_NAD = 'N' AND excl.excl_DNS = 'N' AND excl.excl_NAU = 'N'
    THEN contact.email_pref_address
    ELSE NULL
-   END)
-, contact.Home_Georegion_code
-, 2013
-, NVL(ATH_Giving_B5FY.B5_ATHL_PD_MEMO_MG, 0)
-, NVL(ATH_AF_Giving_B5FY.B5_ATHL_AF_PD_MEMO_MG, 0)
-, 2014
-, NVL(ATH_Giving_B4FY.B4_ATHL_PD_MEMO_MG, 0)
-, NVL(ATH_AF_Giving_B4FY.B4_ATHL_AF_PD_MEMO_MG, 0)
-, 2015
-, NVL(ATH_Giving_B3FY.B3_ATHL_PD_MEMO_MG, 0)
-, NVL(ATH_AF_Giving_B3FY.B3_ATHL_AF_PD_MEMO_MG, 0)
-, 2016
-, NVL(ATH_Giving_B2FY.B2_ATHL_PD_MEMO_MG, 0)
-, NVL(ATH_AF_Giving_B2FY.B2_ATHL_AF_PD_MEMO_MG, 0)
-, 2017
-, NVL(ATH_Giving_B1FY.B1_ATHL_PD_MEMO_MG, 0)
-, NVL(ATH_AF_Giving_B1FY.B1_ATHL_AF_PD_MEMO_MG, 0)
-, 2018
+   END) "P_EMAIL"
+, contact.Home_Georegion_code "GEO"
+, 2013 "B4FY"
+, NVL(ATH_Giving_B5FY.B5_ATHL_PD_MEMO_MG, 0) "B5_ATHL_PD_MEMO_MG"
+, NVL(ATH_AF_Giving_B5FY.B5_ATHL_AF_PD_MEMO_MG, 0) "B5_ATHL_AF_PD_MEMO_MG"
+, 2014 "B4FY"
+, NVL(ATH_Giving_B4FY.B4_ATHL_PD_MEMO_MG, 0) "B4_ATHL_PD_MEMO_MG"
+, NVL(ATH_AF_Giving_B4FY.B4_ATHL_AF_PD_MEMO_MG, 0) "B4_ATHL_AF_PD_MEMO_MG"
+, 2015 "B4FY"
+, NVL(ATH_Giving_B3FY.B3_ATHL_PD_MEMO_MG, 0) "B3_ATHL_PD_MEMO_MG"
+, NVL(ATH_AF_Giving_B3FY.B3_ATHL_AF_PD_MEMO_MG, 0) "B3_ATHL_AF_PD_MEMO_MG"
+, 2016 "B4FY"
+, NVL(ATH_Giving_B2FY.B2_ATHL_PD_MEMO_MG, 0) "B2_ATHL_PD_MEMO_MG"
+, NVL(ATH_AF_Giving_B2FY.B2_ATHL_AF_PD_MEMO_MG, 0) "B2_ATHL_AF_PD_MEMO_MG"
+, 2017 "B4FY"
+, NVL(ATH_Giving_B1FY.B1_ATHL_PD_MEMO_MG, 0) "B1_ATHL_PD_MEMO_MG"
+, NVL(ATH_AF_Giving_B1FY.B1_ATHL_AF_PD_MEMO_MG, 0) "B1_ATHL_AF_PD_MEMO_MG"
+, 2018 "CYR"
 , NVL(ATH_Giving_CYR.CFY_ATHL_PD_MEMO_MG, 0) "CFY_ATHL_PD_MEMO_MG"
 , NVL(ATH_AF_Giving_CYR.CFY_ATHL_AF_PD_MEMO_MG, 0) "CFY_ATHL_AF_PD_MEMO_MG"
-, NVL(NonAthlGivingLast5Years.Avg_Giving_Non_Athl_Past_5_Yrs, 0)
+, NVL(NonAthlGivingLast5Years.Avg_Giving_Non_Athl_Past_5_Yrs, 0) "Avg_Giving_Non_Athl_Past_5_Yrs"
+, names.AP_Society_Name "SOCIETY_NAME"
+, names.Annual_Report_Name "ANNUAL_RPT_NAME"
+, con.primary_staff_desc "PRIM_STAFF"
+, CYR_NO_ATHL
+, (donor.PD_5YR + donor.PD_MEMO_5YR ) "ALL_PAST_5YRS"
+, (donor.annual_pd_pyr + donor.annual_pd_memo_pyr +
+   donor.annual_pd_3yr + donor.annual_pd_memo_3yr +
+   donor.annual_pd_4yr + donor.annual_pd_memo_4yr +
+   donor.annual_pd_5yr + donor.annual_pd_memo_5yr +
+   donor.annual_pd_6yr + donor.annual_pd_memo_6yr) "ALL_PAST_5YRS_AF"
+, (donor.LT_PD + donor.LT_PD_MEMO) "ALL_LT_GIVING"
+, AW_HISTORY.LAST_ATHL_GIFT_AMT "Last_Athl_Gift_Amt"
+, AW_HISTORY.LAST_ATHL_GIFT_DATE "Last_Athl_Gift_Date"
+, AW_HISTORY.LAST_ATHL_GIFT_DESIGNATION "Last_Athl_Gift_Designation"
+, AW_HISTORY.LAST_ATHL_GIFT_NUMBER "Last_Athl_Gift_Number"
+, AW_HISTORY.LAST_ATHL_FY_GIVEN "Last_Athl_FY_Given"
+, DONOR.CONS_YEARS_ATHL "ATHL_CONS_YRS"
+, emp.SICC_DESC "Industry"
+, occupation.Occupational_Title "Occupational_Title"
+, (donor.lt_athl_pd + donor.lt_athl_pd_memo) "LT_ATHL_GIVING"
 , (CASE
    WHEN Sports.sport_code IS NOT NULL
    THEN 'Yes'
@@ -367,26 +387,6 @@ SELECT con.banner_id
    THEN 'WVB'
    ELSE NULL
    END) "WVB"
-, names.AP_Society_Name "SOCIETY_NAME"
-, names.Annual_Report_Name "ANNUAL_RPT_NAME"
-, con.primary_staff_desc
-, CYR_NO_ATHL
-, (donor.PD_5YR + donor.PD_MEMO_5YR ) "ALL_PAST_5YRS"
-, (donor.annual_pd_pyr + donor.annual_pd_memo_pyr +
-   donor.annual_pd_3yr + donor.annual_pd_memo_3yr +
-   donor.annual_pd_4yr + donor.annual_pd_memo_4yr +
-   donor.annual_pd_5yr + donor.annual_pd_memo_5yr +
-   donor.annual_pd_6yr + donor.annual_pd_memo_6yr) "ALL_PAST_5YRS_AF"
-, (donor.LT_PD + donor.LT_PD_MEMO) "ALL_LT_GIVING"
-, AW_HISTORY.LAST_ATHL_GIFT_AMT "Last_Athl_Gift_Amt"
-, AW_HISTORY.LAST_ATHL_GIFT_DATE "Last_Athl_Gift_Date"
-, AW_HISTORY.LAST_ATHL_GIFT_DESIGNATION "Last_Athl_Gift_Designation"
-, AW_HISTORY.LAST_ATHL_GIFT_NUMBER "Last_Athl_Gift_Number"
-, AW_HISTORY.LAST_ATHL_FY_GIVEN "Last_Athl_FY_Given"
-, DONOR.CONS_YEARS_ATHL "ATHL_CONS_YRS"
-, (donor.lt_athl_pd + donor.lt_athl_pd_memo) "LT_ATHL_GIVING"
-, emp.SICC_DESC "Industry"
-, occupation.Occupational_Title
 , ratings.p_rating_code "Priority"
 FROM C_CN_Constituent con
 , C_CN_Current_Names names
