@@ -7,6 +7,7 @@ AND con.donor_code_primary LIKE 'EST%'
 AND detail.cash_credit_person > 0
 AND detail.PLEDGE_NUM = '0000000' 
 AND detail.MEMO_THIRD_PARTY_PMT = 0
+and :parm_BT_view_prior_year_EOY_totals is not null
 AND DESIGNATION_CODE IN 
 (SELECT DESIGNATION_CODE
 FROM PENTAHO.C_GI_DESIGNATIONS
